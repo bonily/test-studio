@@ -4,19 +4,31 @@ import {getPersonsBySortType} from './common';
 
 
 export const getPersons = (state) => {
-  console.log(`тут`);
-  return state.persons;
+  return state.filteredPersons;
 };
 
 export const getSortType = (state) => {
+  console.log(state.sortType);
   return state.sortType;
 };
 
+export const getAscendingStatus = (state) => {
+  return state.isSortAscending;
+};
+
+export const getViewStatus = (state) => {
+  return state.isTableView;
+};
+
+export const getLanguage = (state) => {
+  return state.language;
+};
 
 export const getSortedPerson = createSelector(
     getPersons,
     getSortType,
-    (persons, sortType) => {
-      return getPersonsBySortType(persons, sortType);
+    getAscendingStatus,
+    (persons, sortType, ascendingStatus) => {
+      return getPersonsBySortType(persons, sortType, ascendingStatus);
     }
 );

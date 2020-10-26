@@ -3,8 +3,6 @@ import React, {useEffect, useState} from "react";
 import {PersonType} from '../../types';
 import styled from 'styled-components';
 import {Transition} from 'react-transition-group';
-import ReactPlayer from 'react-player';
-
 
 const duration = 500;
 
@@ -21,30 +19,77 @@ const transitionStyles = {
   unmounted: {opacity: 0}
 };
 
-const StarButton = styled.button`
-  border: none;
-
-  background: url('./star.svg');
-`;
-
-
 // eslint-disable-next-line
 const Li = styled.li<{big: boolean}>`
-  width: ${({big}) => big ? `100%` : `45%`};
+  position: relative;
+  display: flex;
+  flex-wrap: wrap;
 
-  margin-right: 20px;
+  width: ${({big}) => big ? `100%` : `49%`};
+
+  margin-bottom: 15px;
 
   border: 1px solid grey;
+
+  box-shadow: 0 10px 15px rgba(0,0,0,0.25), 0 10px 10px rgba(0,0,0,0.22);
 `;
 
+const H2 = styled.h2`
+  display: inline-block;
+
+  margin-left: 15px;
+  margin-top: 0;
+  margin-bottom: 0;
+`;
+
+const P = styled.p`
+  margin-top: 10px;
+  margin-bottom: 10px;
+`;
+
+const Label = styled.label`
+  position: absolute;
+
+  top: 15px;
+  right: 15px;
+
+  cursor: pointer;
+`;
+
+// eslint-disable-next-line
+const PlayerDiv = styled.div<{isTableView: boolean}>`
+  display: ${({isTableView}) => isTableView ? `block` : `none`};
+
+  max-width: 50%;
+
+  @media (max-width: 768px) {
+    max-width: 100%;
+  }
+`;
+
+// eslint-disable-next-line
+const InfoDiv = styled.div<{video: boolean}>`
+  position: relative;
+
+  width: ${({video}) => video ? `50%` : `100%`};
+
+  padding-left: 25px;
+  padding-top: 15px;
+  box-sizing: border-box;
+
+  @media (max-width: 768px) {
+    width: 100%;
+  }
+`;
 
 interface Props {
   person: PersonType,
-  i: number
+  i: number,
+  isTableView: boolean
 }
 
 const Person: React.FunctionComponent<Props> = (props: Props) => {
-  const {person, i} = props;
+  const {person, i, isTableView} = props;
   const playerRef = React.useRef(null);
   const [inProp, setInProp] = useState(false);
 
@@ -70,21 +115,34 @@ const Person: React.FunctionComponent<Props> = (props: Props) => {
         }}
         big = {person.video ? true : false}
         >
-          <img src={`./images/${person.image}.svg`} width='45px' height='45px' alt='Фотогпфия пользователя'/>
-          <h2>{person.name}</h2>
-          <StarButton></StarButton>
-          <p>{person.age}</p>
-          <p>{person.phone}</p>
-          <p>{person.phrase}</p>
+          <InfoDiv video = {person.video ? true : false}>
+            <img src={`./images/${person.image}.svg`} width='45px' height='45px' alt='Фотогпфия пользователя'/>
+            <H2>{person.name}</H2>
+            <input type="checkbox" id="event-favorite-1" className="visually-hidden"/>
+            <Label htmlFor="event-favorite-1" style={{display: `inlone-block`}}>
+              <span className="visually-hidden">Add to favorite</span>
+              <svg width="28" height="28" viewBox="0 0 28 28" fill={person.favorite ? `#1053b8` : `#e8eef7`}>
+                <path d="M14 21l-8.22899 4.3262 1.57159-9.1631L.685209 9.67376 9.8855 8.33688 14 0l4.1145 8.33688 9.2003 1.33688-6.6574 6.48934 1.5716 9.1631L14 21z"/>
+              </svg>
+            </Label>
+            <P>{person.age}</P>
+            <P>{person.phone}</P>
+            <P>{person.phrase}</P>
+          </InfoDiv>
           {person.video ?
-            <div ref={playerRef}>
-              <ReactPlayer
-                url = {`./videos/${person.video}.mp4`}
+            <PlayerDiv isTableView = {isTableView}>
+              <video
+                src = {`./videos/${person.video}.mp4`}
                 controls = {true}
-                playing = {true}
-
+                autoPlay = {true}
+                ref={playerRef}
+                style = {{
+                  width: `100%`,
+                  boxShadow: `0 10px 15px rgba(0,0,0,0.25), 0 10px 10px rgba(0,0,0,0.22)`
+                }}
               />
-            </div>
+            </PlayerDiv>
+
             : `` }
         </Li>
 
