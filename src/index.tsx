@@ -3,13 +3,13 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import App from './components/app/app';
 import {createApi} from './api';
-import {getUrl} from './url';
 import {createStore, compose, applyMiddleware} from "redux";
 import {Provider} from 'react-redux';
 import thunk from 'redux-thunk';
 import {reducer, Operation} from './reducer';
 
-const paramsFromUrl = getUrl();
+
+const url = window.location.href;
 
 const api = createApi();
 console.log(api);
@@ -17,12 +17,13 @@ console.log(api);
 const store = createStore(
     reducer,
     compose(
-        applyMiddleware(thunk.withExtraArgument(api), thunk.withExtraArgument(paramsFromUrl)),
+        applyMiddleware(thunk.withExtraArgument(api)),
     )
 );
 
 store.dispatch(Operation.loadPersons());
-store.dispatch(Operation.getUrl(paramsFromUrl));
+store.dispatch(Operation.getValueFromUrl(url));
+//
 
 
 ReactDOM.render(

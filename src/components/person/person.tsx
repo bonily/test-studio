@@ -1,8 +1,11 @@
 /* eslint-disable no-alert, no-console */
-import React, {useEffect, useState} from "react";
+import React, {useEffect, useState} from 'react';
 import {PersonType} from '../../types';
 import styled from 'styled-components';
 import {Transition} from 'react-transition-group';
+import {useInView} from 'react-intersection-observer';
+import ReactPlayer from 'react-player';
+
 
 const duration = 500;
 
@@ -92,29 +95,35 @@ interface Props {
 const Person: React.FunctionComponent<Props> = (props: Props) => {
   const {person, i, isTableView, onFavoriteInputChange} = props;
   const [favoriteStatus, setFavoriteStatus] = useState(person.favourite);
-  const playerRef = React.useRef(null);
   const [inProp, setInProp] = useState(false);
-
+  const {ref, inView} = useInView({
+    /* Optional options */
+    threshold: 1,
+    trackVisibility: true,
+    delay: 100,
+    rootMargin: `-20% 0px -20% 0px`
+  });
 
   useEffect(() => {
     const timer = setInterval(() => {
       setInProp(true);
-    }, 100);
+    }, 10);
     return () => {
       setInProp(false);
       window.clearInterval(timer);
     };
   }, []);
 
+
   return (
-    <Transition in={inProp} timeout={duration} key={person.id}>
+    <Transition in={inProp} timeout={duration} key={person.id} >
       {(state) => (
 
         <Li style={{
           ...defaultStyle,
           ...transitionStyles[state],
-          transitionDelay: `${i * 1000}ms`
-        }}
+          transitionDelay: `${i * 150}ms`
+        } }
         big = {person.video || !isTableView ? true : false}
         >
           <InfoDiv video = {person.video && isTableView ? true : false}>
@@ -123,7 +132,6 @@ const Person: React.FunctionComponent<Props> = (props: Props) => {
             <input type="checkbox" id="event-favorite-1" className="visually-hidden" checked={favoriteStatus} onChange = {() => {
               setFavoriteStatus(!favoriteStatus);
               onFavoriteInputChange(person.id);
-              console.log(`hhhheee`);
             }}/>
             <Label htmlFor="event-favorite-1" style={{display: `inlone-block`}}>
               <span className="visually-hidden">Add to favorite</span>
@@ -136,16 +144,19 @@ const Person: React.FunctionComponent<Props> = (props: Props) => {
             <P>{person.phrase}</P>
           </InfoDiv>
           {person.video ?
-            <PlayerDiv isTableView = {isTableView}>
-              <video
-                src = {`./videos/${person.video}.mp4`}
+            <PlayerDiv isTableView = {isTableView} ref={ref}>
+              <ReactPlayer
+                url = {`./videos/${person.video}.mp4`}
                 controls = {true}
-                autoPlay = {true}
-                ref={playerRef}
+                playing = {inView}
+                muted = {true}
+
+                width='100%'
+
                 style = {{
-                  width: `100%`,
                   boxShadow: `0 10px 15px rgba(0,0,0,0.25), 0 10px 10px rgba(0,0,0,0.22)`
                 }}
+                onPlay = {() => console.log(`tctctctc`)}
               />
             </PlayerDiv>
 

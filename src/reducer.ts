@@ -2,6 +2,7 @@
 import {extend, getFilteredPersons, updateFavoriteStatus} from './common';
 import {LANGUAGE} from './const';
 import {PersonType} from './types';
+import {getParamsFromUrl} from './common';
 
 export interface AppStateType {
   persons: PersonType[] | [],
@@ -31,92 +32,92 @@ const ActionType = {
   CHANGE_VIEW: `CHANGE_VIEW`,
   CHANGE_FAVORITE_STATUS: `CHANGE_FAVORITE_STATUS`,
   FILTER_PERSONS: `FILTER_PERSON`,
-  GET_URL: `GET_URL`,
+  GET_VALUE_FROM_URL: `GET_VALUE_FROM_URL`,
   UPDATE_URL: `UPDATE_URL`
 };
 
 
 const ActionCreator = {
-  loadPersons: (persons: PersonType[]) => {
+  loadPersons: (persons: PersonType[]):{type: string, payload: PersonType[]} => {
     return {
       type: ActionType.LOAD_PERSONS,
       payload: persons
     };
   },
-  changeSortType: (sortType: string) => {
+  changeSortType: (sortType: string): {type: string, payload: string}=> {
     return {
       type: ActionType.CHANGE_SORT_TYPE,
       payload: sortType
     };
   },
-  changeAscendingStatus: () => {
+  changeAscendingStatus: (): {type: string} => {
     return {
       type: ActionType.CHANGE_ASCENDING_STATUS
     };
   },
-  changeLanguage: (language: string) => {
+  changeLanguage: (language: string): {type: string, payload: string} => {
     return {
       type: ActionType.CHANGE_LANGUAGE,
       payload: language
     };
   },
-  changeView: () => {
+  changeView: (): {type: string} => {
     return {
       type: ActionType.CHANGE_VIEW
     };
   },
-  updateURL: () => {
+  updateURL: (): {type: string} => {
     return {
       type: ActionType.UPDATE_URL
     };
   },
-  changeFavoriteStatus: (id : number) => {
+  changeFavoriteStatus: (id : number): {type: string, payload: number } => {
     return {
       type: ActionType.CHANGE_FAVORITE_STATUS,
       payload: id
     };
   },
-  filterPersons: (str: string) => {
+  filterPersons: (filter: string): {type: string, payload: string} => {
     return {
       type: ActionType.FILTER_PERSONS,
-      payload: str
+      payload: filter
     };
   },
-  getUrl: (url: any) => {
+  getValueFromUrl: (url: {sortType: string, isSortAscending: boolean, isTableView: boolean}): {type: string, payload: {sortType: string, isSortAscending: boolean, isTableView: boolean}} => {
     return {
-      type: ActionType.GET_URL,
+      type: ActionType.GET_VALUE_FROM_URL,
       payload: url
     };
   }
 };
 
 const Operation = {
-  loadPersons: () => (dispatch: (arg0: { type: string; payload?: PersonType[]; }) => void, getState: any, api: { get: (arg0: string) => Promise<any>; }) => {
-    console.log(api);
+  loadPersons: () => (dispatch: (arg0: { type: string; payload?: PersonType[]; }) => void, getState: () => void, api: { get: (arg0: string) => Promise<PersonType[]>; }) => {
     return api.get(`/data.json`)
     .then((response : any) => {
       dispatch(ActionCreator.loadPersons((response.data)));
     });
   },
-  changeAscendingStatus: () => (dispatch: any) => {
+  changeAscendingStatus: () => (dispatch: (arg0: { type: string; }) => void) => {
     dispatch(ActionCreator.changeAscendingStatus());
     dispatch(ActionCreator.updateURL());
   },
-  changeView: () => (dispatch: any) => {
+  changeView: () => (dispatch: (arg0: { type: string; }) => void) => {
     dispatch(ActionCreator.changeView());
     dispatch(ActionCreator.updateURL());
   },
-  changeSortType: (sortType: string) => (dispatch: any) => {
+  changeSortType: (sortType: string) => (dispatch: (arg0: { type: string; payload?: string; }) => void) => {
     dispatch(ActionCreator.changeSortType(sortType));
     dispatch(ActionCreator.updateURL());
   },
-  getUrl: (paramsFromUrl : any) => (dispatch: any, getState: any) => {
-    console.log(getState());
-    dispatch(ActionCreator.getUrl(paramsFromUrl));
+  getValueFromUrl: (url: string) => (dispatch: (arg0: { type: string; payload: { sortType: string; isSortAscending: boolean; isTableView: boolean; }; }) => void) => {
+    const params = getParamsFromUrl(url);
+    dispatch(ActionCreator.getValueFromUrl(params));
   }
 };
 
-const reducer = (state: AppStateType = initialState, action: { type: any; payload: any }) => {
+
+const reducer = (state: AppStateType = initialState, action: { type: string; payload: any}): AppStateType => {
   switch (action.type) {
     case ActionType.LOAD_PERSONS:
       return extend(state, {
@@ -146,10 +147,8 @@ const reducer = (state: AppStateType = initialState, action: { type: any; payloa
     case ActionType.CHANGE_FAVORITE_STATUS:
       return extend(state, {
         persons: updateFavoriteStatus(state.persons, action.payload),
-        // filteredPersons: updateFavoriteStatus(state.filteredPersons, action.payload),
       });
-    case ActionType.GET_URL:
-      console.log(action.payload);
+    case ActionType.GET_VALUE_FROM_URL:
       return extend(state, action.payload);
     case ActionType.UPDATE_URL:
       const title = ``;
