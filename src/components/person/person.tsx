@@ -85,13 +85,16 @@ const InfoDiv = styled.div<{video: boolean}>`
 interface Props {
   person: PersonType,
   i: number,
-  isTableView: boolean
+  isTableView: boolean,
+  onFavoriteInputChange: (arg0: number) => void
 }
 
 const Person: React.FunctionComponent<Props> = (props: Props) => {
-  const {person, i, isTableView} = props;
+  const {person, i, isTableView, onFavoriteInputChange} = props;
+  const [favoriteStatus, setFavoriteStatus] = useState(person.favourite);
   const playerRef = React.useRef(null);
   const [inProp, setInProp] = useState(false);
+
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -102,10 +105,9 @@ const Person: React.FunctionComponent<Props> = (props: Props) => {
       window.clearInterval(timer);
     };
   }, []);
-  console.log(inProp);
 
   return (
-    <Transition in={inProp} timeout={duration} key={i}>
+    <Transition in={inProp} timeout={duration} key={person.id}>
       {(state) => (
 
         <Li style={{
@@ -113,15 +115,19 @@ const Person: React.FunctionComponent<Props> = (props: Props) => {
           ...transitionStyles[state],
           transitionDelay: `${i * 1000}ms`
         }}
-        big = {person.video ? true : false}
+        big = {person.video || !isTableView ? true : false}
         >
-          <InfoDiv video = {person.video ? true : false}>
+          <InfoDiv video = {person.video && isTableView ? true : false}>
             <img src={`./images/${person.image}.svg`} width='45px' height='45px' alt='Фотогпфия пользователя'/>
             <H2>{person.name}</H2>
-            <input type="checkbox" id="event-favorite-1" className="visually-hidden"/>
+            <input type="checkbox" id="event-favorite-1" className="visually-hidden" checked={favoriteStatus} onChange = {() => {
+              setFavoriteStatus(!favoriteStatus);
+              onFavoriteInputChange(person.id);
+              console.log(`hhhheee`);
+            }}/>
             <Label htmlFor="event-favorite-1" style={{display: `inlone-block`}}>
               <span className="visually-hidden">Add to favorite</span>
-              <svg width="28" height="28" viewBox="0 0 28 28" fill={person.favorite ? `#1053b8` : `#e8eef7`}>
+              <svg width="28" height="28" viewBox="0 0 28 28" fill={favoriteStatus ? `#1053b8` : `#e8eef7`}>
                 <path d="M14 21l-8.22899 4.3262 1.57159-9.1631L.685209 9.67376 9.8855 8.33688 14 0l4.1145 8.33688 9.2003 1.33688-6.6574 6.48934 1.5716 9.1631L14 21z"/>
               </svg>
             </Label>

@@ -1,6 +1,6 @@
 export interface PersonType {
   age: number,
-  favorite: boolean,
+  favourite: boolean,
   id: number,
   image: string,
   name: string,

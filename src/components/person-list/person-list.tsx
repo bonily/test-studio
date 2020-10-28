@@ -24,13 +24,13 @@ const Ul = styled.ul`
 
 interface Props {
   persons: PersonType[],
-  isTableView: boolean
+  isTableView: boolean,
+  onFavoriteInputChange: (arg0: number) => void
 }
 
 const PersonList: React.FunctionComponent<Props> = (props: Props) => {
-  const {persons, isTableView} = props;
+  const {persons, isTableView, onFavoriteInputChange} = props;
   const [sortedPersons, setSortedPersons] = useState(persons);
-  console.log(persons);
 
   useEffect(() => {
     setSortedPersons([]);
@@ -39,6 +39,14 @@ const PersonList: React.FunctionComponent<Props> = (props: Props) => {
       setSortedPersons(persons);
     });
   }, [persons]);
+
+  useEffect(() => {
+    setSortedPersons([]);
+
+    setTimeout(() => {
+      setSortedPersons(persons);
+    });
+  }, [isTableView]);
 
 
   return (
@@ -50,6 +58,7 @@ const PersonList: React.FunctionComponent<Props> = (props: Props) => {
             i = {i}
             key = {i}
             isTableView = {isTableView}
+            onFavoriteInputChange = {onFavoriteInputChange}
           />
 
         );

@@ -1,3 +1,4 @@
+/* eslint-disable no-alert, no-console */
 import axios from "axios";
 
 export const createApi = () => {

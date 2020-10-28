@@ -1,26 +1,27 @@
 /* eslint-disable no-alert, no-console */
 import {createSelector} from 'reselect';
 import {getPersonsBySortType} from './common';
+import {AppStateType} from './reducer';
 
 
-export const getPersons = (state) => {
+export const getPersons = (state : AppStateType) => {
   return state.filteredPersons;
 };
 
-export const getSortType = (state) => {
+export const getSortType = (state : AppStateType) => {
   console.log(state.sortType);
   return state.sortType;
 };
 
-export const getAscendingStatus = (state) => {
+export const getAscendingStatus = (state : AppStateType) => {
   return state.isSortAscending;
 };
 
-export const getViewStatus = (state) => {
+export const getViewStatus = (state : AppStateType) => {
   return state.isTableView;
 };
 
-export const getLanguage = (state) => {
+export const getLanguage = (state : AppStateType) => {
   return state.language;
 };
 

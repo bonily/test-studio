@@ -4,9 +4,10 @@ import {connect} from 'react-redux';
 import PersonList from '../person-list/person-list';
 import {PersonType} from '../../types';
 import {getSortedPerson, getSortType, getAscendingStatus, getLanguage, getViewStatus} from '../../selector';
-import {ActionCreator} from '../../reducer';
+import {ActionCreator, AppStateType, Operation} from '../../reducer';
 import Header from '../Header/Header';
 import {createGlobalStyle} from 'styled-components';
+import {BrowserRouter as Router} from 'react-router-dom';
 
 const GlobalStyle = createGlobalStyle`
   body {
@@ -39,59 +40,65 @@ interface MapDispatchToPropsType {
   onLanguageTitleClick: (arg0: string) => void,
   onViewTitleClick: () => void,
   onInputChange: (arg0: string) => void,
+  onFavoriteInputChange: (arg0: number) =>void,
 }
 
 const App: React.FunctionComponent<MapStatePropsType & MapDispatchToPropsType> = (props: MapStatePropsType & MapDispatchToPropsType) => {
-  const {language, persons, sortType, isAscending, isTableView, onLanguageTitleClick, onRangingTitleClick, onSortTitleClick, onViewTitleClick, onInputChange} = props;
+  const {language, persons, sortType, isAscending, isTableView, onLanguageTitleClick, onRangingTitleClick, onSortTitleClick, onViewTitleClick, onInputChange, onFavoriteInputChange} = props;
 
   return (
-    <div className="App">
-      <GlobalStyle />
-      <Header
-        isAscending = {isAscending}
-        isTableView = {isTableView}
-        language = {language}
-        sortType = {sortType}
-        onLanguageTitleClick = {onLanguageTitleClick}
-        onRangingTitleClick = {onRangingTitleClick}
-        onSortTitleClick = {onSortTitleClick}
-        onViewTitleClick = {onViewTitleClick}
-        onInputChange = {onInputChange}
-      />
-      <section>
-        <PersonList
-          persons = {persons}
+    <Router>
+      <div className="App">
+        <GlobalStyle />
+        <Header
+          isAscending = {isAscending}
           isTableView = {isTableView}
-        ></PersonList>
-      </section>
-    </div>
+          language = {language}
+          sortType = {sortType}
+          onLanguageTitleClick = {onLanguageTitleClick}
+          onRangingTitleClick = {onRangingTitleClick}
+          onSortTitleClick = {onSortTitleClick}
+          onViewTitleClick = {onViewTitleClick}
+          onInputChange = {onInputChange}
+        />
+        <section>
+          <PersonList
+            persons = {persons}
+            isTableView = {isTableView}
+            onFavoriteInputChange = {onFavoriteInputChange}
+          ></PersonList>
+        </section>
+      </div>
+    </Router>
   );
 };
 
-const mapStateToProps = (state: any): MapStatePropsType => ({
+const mapStateToProps = (state: AppStateType): MapStatePropsType => ({
   persons: getSortedPerson(state),
   sortType: getSortType(state),
   language: getLanguage(state),
   isAscending: getAscendingStatus(state),
-  isTableView: getViewStatus(state)
+  isTableView: getViewStatus(state),
 });
 
 const mapDispatchToProps = (dispath: any): MapDispatchToPropsType => ({
   onSortTitleClick(sortType) {
-    dispath(ActionCreator.changeSortType(sortType));
+    dispath(Operation.changeSortType(sortType));
   },
   onRangingTitleClick() {
-    dispath(ActionCreator.changeAscendingStatus());
+    dispath(Operation.changeAscendingStatus());
   },
   onLanguageTitleClick(language) {
-    console.log(language);
     dispath(ActionCreator.changeLanguage(language));
   },
   onViewTitleClick() {
-    dispath(ActionCreator.changeView());
+    dispath(Operation.changeView());
   },
   onInputChange(str) {
     dispath(ActionCreator.filterPersons(str));
+  },
+  onFavoriteInputChange(id) {
+    dispath(ActionCreator.changeFavoriteStatus(id));
   }
 });
 

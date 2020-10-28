@@ -21,16 +21,20 @@ const Button = styled.button<{isActive: boolean}>`
   width: 33.3%;
   height: 30px;
 
+  font-size: 14px;
   font-weight: bold;
   margin-bottom: 15px;
 
   background: ${({isActive}) => isActive ? `#e6e6e6` : `#ffffff`};
   border: 1px solid grey;
 
+  transition: font-size 400ms;
+
   cursor: pointer;
 
   &:hover {
     color: #ffffff;
+    font-size: 17px;
 
     background: #9f9d9d
   }
@@ -54,14 +58,19 @@ const ViewButton = styled(Button)`
 // eslint-disable-next-line
 const LanguageButton = styled.button<{isActive: boolean}>`
   width: 30px;
-  height: 25px;
+  height: 40px;
 
   color: ${({isActive}) => isActive ? ` #000000` : `#9f9d9d`};
+
+  padding: 0;
 
   border: none;
   background: #ffffff;
 
+  transition: font-size 400ms;
+
   &:hover {
+    font-size: 17px;
     color: #000000;
   }
 `;
@@ -91,8 +100,8 @@ const sortTypes = [{type: `ID`, russian: `ID`, english: `ID`}, {type: `NAME`, ru
 interface Props {
   sortType: string,
   language: string,
-  isAscending: boolean,
-  isTableView: boolean,
+  isAscending: boolean | null,
+  isTableView: boolean | null,
   onRangingTitleClick: () => void,
   onSortTitleClick: (arg0: string) => void,
   onLanguageTitleClick: (arg0: string) => void,
@@ -102,13 +111,14 @@ interface Props {
 
 const Header: React.FunctionComponent<Props> = (props: Props) => {
   const {isAscending, isTableView, language, sortType, onLanguageTitleClick, onRangingTitleClick, onSortTitleClick, onViewTitleClick, onInputChange} = props;
+  console.log(isAscending);
   const [inputText, setInputText] = useState(``);
 
   const isLanguageRu = language === LANGUAGE.RU;
 
   return (
     <HeaderStyle>
-      <div style={{width: `100%`}}>
+      <div style={{width: `100%`, height: `40px`}}>
         <LanguageButton onClick = {() => onLanguageTitleClick(LANGUAGE.RU)} isActive = {isLanguageRu ? true : false}>RU</LanguageButton>
         <LanguageButton onClick = {() => onLanguageTitleClick(LANGUAGE.EN)} isActive = {language === LANGUAGE.EN ? true : false}>EN</LanguageButton>
       </div>
