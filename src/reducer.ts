@@ -110,10 +110,9 @@ const Operation = {
     dispatch(ActionCreator.changeSortType(sortType));
     dispatch(ActionCreator.updateURL());
   },
-  getUrl: (params : any) => (dispatch: any) => {
-    console.log(params);
-    dispatch(ActionCreator.getUrl(params));
-    dispatch(ActionCreator.changeView());
+  getUrl: (paramsFromUrl : any) => (dispatch: any, getState: any) => {
+    console.log(getState());
+    dispatch(ActionCreator.getUrl(paramsFromUrl));
   }
 };
 

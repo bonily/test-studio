@@ -10,9 +10,9 @@ import thunk from 'redux-thunk';
 import {reducer, Operation} from './reducer';
 
 const paramsFromUrl = getUrl();
-console.log(paramsFromUrl);
 
 const api = createApi();
+console.log(api);
 
 const store = createStore(
     reducer,
