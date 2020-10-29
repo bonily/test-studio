@@ -31,6 +31,11 @@ interface Props {
 const PersonList: React.FunctionComponent<Props> = (props: Props) => {
   const {persons, isTableView, onFavoriteInputChange} = props;
   const [sortedPersons, setSortedPersons] = useState(persons);
+  const [videoPlayingId, setVideoPlayingid] = useState(-1);
+  const [autoPlayingCount, setAutoPlayingCount] = useState(0);
+  const [allPlayingCount, setAllPlayingCount] = useState(0);
+  const [autoPlay, setAutoplay] = useState(true);
+
 
   useEffect(() => {
     setSortedPersons([]);
@@ -38,16 +43,24 @@ const PersonList: React.FunctionComponent<Props> = (props: Props) => {
     setTimeout(() => {
       setSortedPersons(persons);
     });
-  }, [persons]);
+  }, [persons, isTableView]);
 
-  useEffect(() => {
-    setSortedPersons([]);
+  const checkAutoPlayStatus = () => {
+    if (autoPlayingCount < allPlayingCount) {
+      setAutoplay(false);
+    }
+  };
 
-    setTimeout(() => {
-      setSortedPersons(persons);
-    });
-  }, [isTableView]);
+  console.log(autoPlayingCount);
+  console.log(allPlayingCount);
 
+  const updateAllPlayingCount = () => {
+    setAllPlayingCount(allPlayingCount + 1);
+  };
+
+  const updateAutoPlayingCount = () => {
+    setAutoPlayingCount(autoPlayingCount + 1);
+  };
 
   return (
     <Ul>
@@ -58,7 +71,13 @@ const PersonList: React.FunctionComponent<Props> = (props: Props) => {
             i = {i}
             key = {i}
             isTableView = {isTableView}
+            videoPlayingId = {videoPlayingId}
+            autoPlay = {autoPlay}
             onFavoriteInputChange = {onFavoriteInputChange}
+            setAutoPlayingCount = {updateAutoPlayingCount}
+            setAllPlayingCount = {updateAllPlayingCount}
+            setVideoPlayingid = {setVideoPlayingid}
+            checkAutoPlayStatus = {checkAutoPlayStatus}
           />
 
         );

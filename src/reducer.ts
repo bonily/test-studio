@@ -1,12 +1,14 @@
 /* eslint-disable no-alert, no-console */
-import {extend, getFilteredPersons, updateFavoriteStatus} from './common';
+import {extend, updateFavoriteStatus} from './common';
 import {LANGUAGE} from './const';
 import {PersonType} from './types';
 import {getParamsFromUrl} from './common';
+import {ThunkAction} from 'redux-thunk';
+import {Action} from 'redux';
 
 export interface AppStateType {
   persons: PersonType[] | [],
-  filteredPersons: PersonType[],
+  inputValue: string,
   sortType: string,
   isSortAscending: boolean,
   language: string,
@@ -15,7 +17,7 @@ export interface AppStateType {
 
 const initialState = {
   persons: [],
-  filteredPersons: [],
+  inputValue: ``,
   sortType: ``,
   isSortAscending: false,
   language: LANGUAGE.RU,
@@ -91,22 +93,24 @@ const ActionCreator = {
   }
 };
 
+type AppThunk<ReturnType = void> = ThunkAction<ReturnType, AppStateType, any, Action<string>>
+
 const Operation = {
-  loadPersons: () => (dispatch: (arg0: { type: string; payload?: PersonType[]; }) => void, getState: () => void, api: { get: (arg0: string) => Promise<PersonType[]>; }) => {
+  loadPersons: () => (dispatch: (arg0: { type: string; payload?: PersonType[]; }) => void, _getState: () => void, api: { get: (arg0: string) => Promise<PersonType[]>; }) => {
     return api.get(`/data.json`)
     .then((response : any) => {
       dispatch(ActionCreator.loadPersons((response.data)));
     });
   },
-  changeAscendingStatus: () => (dispatch: (arg0: { type: string; }) => void) => {
+  changeAscendingStatus: () : AppThunk=> (dispatch: (arg0: { type: string; }) => void) => {
     dispatch(ActionCreator.changeAscendingStatus());
     dispatch(ActionCreator.updateURL());
   },
-  changeView: () => (dispatch: (arg0: { type: string; }) => void) => {
+  changeView: () : AppThunk => (dispatch: (arg0: { type: string; }) => void) => {
     dispatch(ActionCreator.changeView());
     dispatch(ActionCreator.updateURL());
   },
-  changeSortType: (sortType: string) => (dispatch: (arg0: { type: string; payload?: string; }) => void) => {
+  changeSortType: (sortType: string) : AppThunk => (dispatch: (arg0: { type: string; payload?: string; }) => void) => {
     dispatch(ActionCreator.changeSortType(sortType));
     dispatch(ActionCreator.updateURL());
   },
@@ -141,8 +145,9 @@ const reducer = (state: AppStateType = initialState, action: { type: string; pay
         isTableView: !state.isTableView
       });
     case ActionType.FILTER_PERSONS:
+      console.log(action.payload);
       return extend(state, {
-        filteredPersons: getFilteredPersons(state.persons, action.payload)
+        inputValue: action.payload
       });
     case ActionType.CHANGE_FAVORITE_STATUS:
       return extend(state, {
@@ -152,7 +157,7 @@ const reducer = (state: AppStateType = initialState, action: { type: string; pay
       return extend(state, action.payload);
     case ActionType.UPDATE_URL:
       const title = ``;
-      const url = `searchParams&sort=${state.sortType}&asceding=${state.isSortAscending}&tableview=${state.isTableView}`;
+      const url = `sort=${state.sortType}&asceding=${state.isSortAscending}&tableview=${(state.isTableView) ? `table` : `preview`}`;
 
       window.history.pushState({sortType: action.payload}, title, url);
   }

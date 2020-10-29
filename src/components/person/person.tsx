@@ -1,10 +1,10 @@
 /* eslint-disable no-alert, no-console */
 import React, {useEffect, useState} from 'react';
+import {useCallback, useRef} from 'react';
 import {PersonType} from '../../types';
 import styled from 'styled-components';
 import {Transition} from 'react-transition-group';
 import {useInView} from 'react-intersection-observer';
-import ReactPlayer from 'react-player';
 
 
 const duration = 500;
@@ -88,21 +88,49 @@ const InfoDiv = styled.div<{video: boolean}>`
 interface Props {
   person: PersonType,
   i: number,
+  autoPlay: boolean,
   isTableView: boolean,
-  onFavoriteInputChange: (arg0: number) => void
+  videoPlayingId: number,
+  onFavoriteInputChange: (arg0: number) => void,
+  checkAutoPlayStatus: () => void,
+  setVideoPlayingid: any,
+  setAllPlayingCount: any,
+  setAutoPlayingCount: any,
 }
 
 const Person: React.FunctionComponent<Props> = (props: Props) => {
-  const {person, i, isTableView, onFavoriteInputChange} = props;
+  const {autoPlay, person, i, isTableView, videoPlayingId, onFavoriteInputChange, setVideoPlayingid, setAllPlayingCount, setAutoPlayingCount, checkAutoPlayStatus} = props;
   const [favoriteStatus, setFavoriteStatus] = useState(person.favourite);
   const [inProp, setInProp] = useState(false);
+
+
   const {ref, inView} = useInView({
     /* Optional options */
     threshold: 1,
     trackVisibility: true,
     delay: 100,
-    rootMargin: `-20% 0px -20% 0px`
+    rootMargin: `-20% 0px -20% 0px`,
+    skip: !autoPlay
   });
+
+
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const playVideo = useCallback(() => {
+    if (autoPlay) {
+
+      videoRef.current?.play();
+      setAutoPlayingCount();
+    }
+
+  }, []);
+
+
+  const pauseVideo = useCallback(() => {
+    videoRef.current?.pause();
+    setVideoPlayingid(-1);
+  }, []);
+
+  // console.log(entry);
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -145,18 +173,26 @@ const Person: React.FunctionComponent<Props> = (props: Props) => {
           </InfoDiv>
           {person.video ?
             <PlayerDiv isTableView = {isTableView} ref={ref}>
-              <ReactPlayer
-                url = {`./videos/${person.video}.mp4`}
+              <video
+                src = {`./videos/${person.video}.mp4`}
                 controls = {true}
-                playing = {inView}
+                autoPlay = {false}
                 muted = {true}
-
-                width='100%'
-
+                ref = {videoRef}
                 style = {{
+                  width: `100%`,
                   boxShadow: `0 10px 15px rgba(0,0,0,0.25), 0 10px 10px rgba(0,0,0,0.22)`
                 }}
-                onPlay = {() => console.log(`tctctctc`)}
+                onPlaying = {() => {
+                  console.log(videoRef);
+                  setVideoPlayingid(person.id);
+                  setAllPlayingCount();
+                  checkAutoPlayStatus();
+                }}
+                onPause = {() => console.log(videoRef)}
+                onClick = {(evt) => console.log(evt)}
+                {...videoPlayingId === person.id ? `` : pauseVideo()}
+                {...inView && autoPlay ? playVideo() : pauseVideo()}
               />
             </PlayerDiv>
 

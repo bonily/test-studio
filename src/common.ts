@@ -32,10 +32,11 @@ export const updateFavoriteStatus = (persons : PersonType[], id : number):Person
 
 export const getParamsFromUrl = (url: string):{sortType: string, isSortAscending: boolean, isTableView: boolean} => {
   const searchParams = new URLSearchParams(url);
+  console.log(searchParams.get(`tableview`) === `table`);
 
   return {
     sortType: searchParams.get(`sort`) || SORT_TYPES.ID,
-    isSortAscending: (searchParams.get(`asceding`)) === `true` ? true : false || true,
-    isTableView: searchParams.get(`tableview`) === `true` ? true : false || true,
+    isSortAscending: (searchParams.get(`asceding`)) === `true` ? true : false || false,
+    isTableView: searchParams.get(`tableview`) === `table` ? true : false || false,
   };
 };

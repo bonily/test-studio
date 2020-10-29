@@ -1,5 +1,5 @@
 /* eslint-disable no-alert, no-console */
-import React, {useState} from 'react';
+import React from 'react';
 import styled from 'styled-components';
 import {LANGUAGE} from '../../const';
 
@@ -111,16 +111,14 @@ interface Props {
 
 const Header: React.FunctionComponent<Props> = (props: Props) => {
   const {isAscending, isTableView, language, sortType, onLanguageTitleClick, onRangingTitleClick, onSortTitleClick, onViewTitleClick, onInputChange} = props;
-  console.log(isAscending);
-  const [inputText, setInputText] = useState(``);
 
   const isLanguageRu = language === LANGUAGE.RU;
 
   return (
     <HeaderStyle>
       <div style={{width: `100%`, height: `40px`}}>
-        <LanguageButton onClick = {() => onLanguageTitleClick(LANGUAGE.RU)} isActive = {isLanguageRu ? true : false}>RU</LanguageButton>
-        <LanguageButton onClick = {() => onLanguageTitleClick(LANGUAGE.EN)} isActive = {language === LANGUAGE.EN ? true : false}>EN</LanguageButton>
+        <LanguageButton onClick = {() => onLanguageTitleClick(LANGUAGE.RU)} isActive = {Boolean(isLanguageRu)}>RU</LanguageButton>
+        <LanguageButton onClick = {() => onLanguageTitleClick(LANGUAGE.EN)} isActive = {Boolean(language === LANGUAGE.EN)}>EN</LanguageButton>
       </div>
       <SortDiv style = {{width: `70%`}}>
         <H2>{isLanguageRu ? `Сортировка` : `Sort by`}</H2>
@@ -129,22 +127,21 @@ const Header: React.FunctionComponent<Props> = (props: Props) => {
             <Button
               onClick = {() => onSortTitleClick(type.type)}
               key = {type.type}
-              isActive = {sortType === type.type ? true : false}
+              isActive = {(sortType === type.type)}
             >{isLanguageRu ? type.russian : type.english}</Button>
           );
         })}
-        <RangingButton onClick = {() => onRangingTitleClick()} isActive = {isAscending ? true : false}>{isLanguageRu ? `По возрастанию` : `Ascending order`}</RangingButton>
-        <RangingButton onClick = {() => onRangingTitleClick()} isActive = {!isAscending ? true : false}>{isLanguageRu ? `По убыванию` : `Descending order`}</RangingButton>
+        <RangingButton onClick = {() => onRangingTitleClick()} isActive = {Boolean(isAscending)}>{isLanguageRu ? `По возрастанию` : `Ascending order`}</RangingButton>
+        <RangingButton onClick = {() => onRangingTitleClick()} isActive = {Boolean(!isAscending)}>{isLanguageRu ? `По убыванию` : `Descending order`}</RangingButton>
       </SortDiv>
       <SortDiv style = {{width: `25%`}}>
         <H2>{isLanguageRu ? `Вид` : `View`}</H2>
-        <ViewButton onClick = {() => onViewTitleClick()} isActive = {isTableView ? true : false}>{isLanguageRu ? `Таблица` : `Table`}</ViewButton>
-        <ViewButton onClick = {() => onViewTitleClick()} isActive = {!isTableView ? true : false}>{isLanguageRu ? `Превью` : `Preview`}</ViewButton>
+        <ViewButton onClick = {() => onViewTitleClick()} isActive = {Boolean(isTableView)}>{isLanguageRu ? `Таблица` : `Table`}</ViewButton>
+        <ViewButton onClick = {() => onViewTitleClick()} isActive = {Boolean(!isTableView)}>{isLanguageRu ? `Превью` : `Preview`}</ViewButton>
       </SortDiv>
       <Input type='text' placeholder = {isLanguageRu ? `Поиск` : `Search`}
         onChange = {(evt) => {
-          setInputText(evt.currentTarget.value);
-          onInputChange(inputText);
+          onInputChange(evt.currentTarget.value);
         }}></Input>
     </HeaderStyle>
   );
