@@ -1,0 +1,7 @@
+{
+  "eslint.validate": ["typescript", "typescriptreact"],
+  "eslint.options": {"configFile": "./.eslintrc-ts.yml"},
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": true
+},
+}
