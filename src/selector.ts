@@ -1,4 +1,3 @@
-/* eslint-disable no-alert, no-console */
 import {createSelector} from 'reselect';
 import {getPersonsBySortType, getFilteredPersons} from './common';
 import {AppStateType} from './reducer';
@@ -9,7 +8,6 @@ export const getPersons = (state : AppStateType) => {
 };
 
 export const getSortType = (state : AppStateType) => {
-  console.log(state.sortType);
   return state.sortType;
 };
 

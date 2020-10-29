@@ -1,4 +1,3 @@
-/* eslint-disable no-alert, no-console */
 import React, {useEffect, useState} from 'react';
 import {useCallback, useRef} from 'react';
 import {PersonType} from '../../types';
@@ -88,21 +87,18 @@ const InfoDiv = styled.div<{video: boolean}>`
 interface Props {
   person: PersonType,
   i: number,
-  autoPlay: boolean,
   isTableView: boolean,
   videoPlayingId: number,
   onFavoriteInputChange: (arg0: number) => void,
-  checkAutoPlayStatus: () => void,
-  setVideoPlayingid: any,
-  setAllPlayingCount: any,
-  setAutoPlayingCount: any,
+  setVideoPlayingid: (id: number) => void,
 }
 
 const Person: React.FunctionComponent<Props> = (props: Props) => {
-  const {autoPlay, person, i, isTableView, videoPlayingId, onFavoriteInputChange, setVideoPlayingid, setAllPlayingCount, setAutoPlayingCount, checkAutoPlayStatus} = props;
+  const {person, i, isTableView, videoPlayingId, onFavoriteInputChange, setVideoPlayingid} = props;
   const [favoriteStatus, setFavoriteStatus] = useState(person.favourite);
   const [inProp, setInProp] = useState(false);
 
+  const autoPlay = true;
 
   const {ref, inView} = useInView({
     /* Optional options */
@@ -110,27 +106,21 @@ const Person: React.FunctionComponent<Props> = (props: Props) => {
     trackVisibility: true,
     delay: 100,
     rootMargin: `-20% 0px -20% 0px`,
-    skip: !autoPlay
   });
 
 
   const videoRef = useRef<HTMLVideoElement>(null);
+
   const playVideo = useCallback(() => {
-    if (autoPlay) {
-
-      videoRef.current?.play();
-      setAutoPlayingCount();
-    }
-
+    videoRef.current?.play();
   }, []);
 
 
   const pauseVideo = useCallback(() => {
     videoRef.current?.pause();
-    setVideoPlayingid(-1);
+
   }, []);
 
-  // console.log(entry);
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -140,7 +130,18 @@ const Person: React.FunctionComponent<Props> = (props: Props) => {
       setInProp(false);
       window.clearInterval(timer);
     };
-  }, []);
+  }, [person]);
+
+  useEffect(() => {
+    if (videoPlayingId !== person.id) {
+      pauseVideo();
+    }
+    if (inView && autoPlay) {
+      playVideo();
+    } else {
+      pauseVideo();
+    }
+  }, [videoPlayingId, inView]);
 
 
   return (
@@ -157,11 +158,11 @@ const Person: React.FunctionComponent<Props> = (props: Props) => {
           <InfoDiv video = {person.video && isTableView ? true : false}>
             <img src={`./images/${person.image}.svg`} width='45px' height='45px' alt='Фотогпфия пользователя'/>
             <H2>{person.name}</H2>
-            <input type="checkbox" id="event-favorite-1" className="visually-hidden" checked={favoriteStatus} onChange = {() => {
+            <input type="checkbox" id={`event-${person.id}`} className="visually-hidden" checked={favoriteStatus} onChange = {() => {
               setFavoriteStatus(!favoriteStatus);
               onFavoriteInputChange(person.id);
             }}/>
-            <Label htmlFor="event-favorite-1" style={{display: `inlone-block`}}>
+            <Label htmlFor={`event-${person.id}`} style={{display: `inlone-block`}}>
               <span className="visually-hidden">Add to favorite</span>
               <svg width="28" height="28" viewBox="0 0 28 28" fill={favoriteStatus ? `#1053b8` : `#e8eef7`}>
                 <path d="M14 21l-8.22899 4.3262 1.57159-9.1631L.685209 9.67376 9.8855 8.33688 14 0l4.1145 8.33688 9.2003 1.33688-6.6574 6.48934 1.5716 9.1631L14 21z"/>
@@ -184,15 +185,8 @@ const Person: React.FunctionComponent<Props> = (props: Props) => {
                   boxShadow: `0 10px 15px rgba(0,0,0,0.25), 0 10px 10px rgba(0,0,0,0.22)`
                 }}
                 onPlaying = {() => {
-                  console.log(videoRef);
                   setVideoPlayingid(person.id);
-                  setAllPlayingCount();
-                  checkAutoPlayStatus();
                 }}
-                onPause = {() => console.log(videoRef)}
-                onClick = {(evt) => console.log(evt)}
-                {...videoPlayingId === person.id ? `` : pauseVideo()}
-                {...inView && autoPlay ? playVideo() : pauseVideo()}
               />
             </PlayerDiv>
 

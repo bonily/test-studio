@@ -1,4 +1,3 @@
-/* eslint-disable no-alert, no-console */
 import {PersonType} from './types';
 import {SORT_TYPES} from "./const";
 
@@ -7,7 +6,6 @@ export const extend = (a : any, b: any): any => {
 };
 
 export const getPersonsBySortType = (persons : PersonType[], sortType : string, ascending : boolean): PersonType[] => {
-  console.log(sortType);
   switch (sortType) {
     case SORT_TYPES.NAME:
       return persons.sort((a, b) => ascending ? a.name.localeCompare(b.name) : b.name.localeCompare(a.name));
@@ -26,13 +24,11 @@ export const getFilteredPersons = (persons : PersonType[], str = ``):PersonType[
 export const updateFavoriteStatus = (persons : PersonType[], id : number):PersonType[] => {
   const index = persons.findIndex((person) => person.id === id);
   persons[index].favourite = !persons[index].favourite;
-  console.log(persons[index]);
   return persons;
 };
 
 export const getParamsFromUrl = (url: string):{sortType: string, isSortAscending: boolean, isTableView: boolean} => {
   const searchParams = new URLSearchParams(url);
-  console.log(searchParams.get(`tableview`) === `table`);
 
   return {
     sortType: searchParams.get(`sort`) || SORT_TYPES.ID,

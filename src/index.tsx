@@ -1,4 +1,3 @@
-/* eslint-disable no-alert, no-console */
 import React from 'react';
 import ReactDOM from 'react-dom';
 import App from './components/app/app';
@@ -12,7 +11,7 @@ import {reducer, Operation} from './reducer';
 const url = window.location.href;
 
 const api = createApi();
-console.log(api);
+
 
 const store = createStore(
     reducer,

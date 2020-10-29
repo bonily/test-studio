@@ -1,4 +1,3 @@
-/* eslint-disable no-alert, no-console */
 import React from 'react';
 import {connect} from 'react-redux';
 import PersonList from '../person-list/person-list';
@@ -8,6 +7,7 @@ import {ActionCreator, AppStateType, Operation} from '../../reducer';
 import Header from '../Header/Header';
 import {createGlobalStyle} from 'styled-components';
 import {BrowserRouter as Router} from 'react-router-dom';
+
 
 const GlobalStyle = createGlobalStyle`
   body {
@@ -32,6 +32,8 @@ interface MapStatePropsType {
   language: string,
   isAscending: boolean,
   isTableView: boolean,
+  videoPlayingId: number,
+  isLoaded: boolean
 }
 
 interface MapDispatchToPropsType {
@@ -41,10 +43,11 @@ interface MapDispatchToPropsType {
   onViewTitleClick: () => void,
   onInputChange: (arg0: string) => void,
   onFavoriteInputChange: (arg0: number) =>void,
+  setVideoPlayingid: (id: number) => void
 }
 
 const App: React.FunctionComponent<MapStatePropsType & MapDispatchToPropsType> = (props: MapStatePropsType & MapDispatchToPropsType) => {
-  const {language, persons, sortType, isAscending, isTableView, onLanguageTitleClick, onRangingTitleClick, onSortTitleClick, onViewTitleClick, onInputChange, onFavoriteInputChange} = props;
+  const {language, persons, sortType, videoPlayingId, isAscending, isTableView, isLoaded, onLanguageTitleClick, onRangingTitleClick, onSortTitleClick, onViewTitleClick, onInputChange, onFavoriteInputChange, setVideoPlayingid} = props;
 
   return (
     <Router>
@@ -60,12 +63,18 @@ const App: React.FunctionComponent<MapStatePropsType & MapDispatchToPropsType> =
           onSortTitleClick = {onSortTitleClick}
           onViewTitleClick = {onViewTitleClick}
           onInputChange = {onInputChange}
+
         />
         <section>
           <PersonList
             persons = {persons}
             isTableView = {isTableView}
             onFavoriteInputChange = {onFavoriteInputChange}
+            videoPlayingId = {videoPlayingId}
+            setVideoPlayingid = {setVideoPlayingid}
+            isAscending = {isAscending}
+            sortType = {sortType}
+            isLoaded = {isLoaded}
           ></PersonList>
         </section>
       </div>
@@ -79,6 +88,8 @@ const mapStateToProps = (state: AppStateType): MapStatePropsType => ({
   language: getLanguage(state),
   isAscending: getAscendingStatus(state),
   isTableView: getViewStatus(state),
+  videoPlayingId: state.videoPlayingId,
+  isLoaded: state.isLoaded
 });
 
 const mapDispatchToProps = (dispath: any): MapDispatchToPropsType => ({
@@ -99,6 +110,9 @@ const mapDispatchToProps = (dispath: any): MapDispatchToPropsType => ({
   },
   onFavoriteInputChange(id) {
     dispath(ActionCreator.changeFavoriteStatus(id));
+  },
+  setVideoPlayingid(id) {
+    dispath(ActionCreator.changeVideoId(id));
   }
 });
 

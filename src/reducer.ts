@@ -1,4 +1,3 @@
-/* eslint-disable no-alert, no-console */
 import {extend, updateFavoriteStatus} from './common';
 import {LANGUAGE} from './const';
 import {PersonType} from './types';
@@ -12,7 +11,9 @@ export interface AppStateType {
   sortType: string,
   isSortAscending: boolean,
   language: string,
-  isTableView: boolean
+  isTableView: boolean,
+  videoPlayingId: number,
+  isLoaded: boolean
 }
 
 const initialState = {
@@ -22,7 +23,10 @@ const initialState = {
   isSortAscending: false,
   language: LANGUAGE.RU,
   isTableView: false,
-  url: ``
+  url: ``,
+  videoPlayingId: -1,
+  isLoaded: false
+
 
 };
 
@@ -35,7 +39,8 @@ const ActionType = {
   CHANGE_FAVORITE_STATUS: `CHANGE_FAVORITE_STATUS`,
   FILTER_PERSONS: `FILTER_PERSON`,
   GET_VALUE_FROM_URL: `GET_VALUE_FROM_URL`,
-  UPDATE_URL: `UPDATE_URL`
+  UPDATE_URL: `UPDATE_URL`,
+  CHANGE_VIDEO_ID: `CHANGE_VIDEO_ID`
 };
 
 
@@ -90,7 +95,13 @@ const ActionCreator = {
       type: ActionType.GET_VALUE_FROM_URL,
       payload: url
     };
-  }
+  },
+  changeVideoId: (id : number): {type: string, payload: number} => {
+    return {
+      type: ActionType.CHANGE_VIDEO_ID,
+      payload: id
+    };
+  },
 };
 
 type AppThunk<ReturnType = void> = ThunkAction<ReturnType, AppStateType, any, Action<string>>
@@ -126,7 +137,7 @@ const reducer = (state: AppStateType = initialState, action: { type: string; pay
     case ActionType.LOAD_PERSONS:
       return extend(state, {
         persons: action.payload,
-        filteredPersons: action.payload,
+        isLoaded: true
       });
     case ActionType.CHANGE_SORT_TYPE:
       return extend(state, {
@@ -145,16 +156,18 @@ const reducer = (state: AppStateType = initialState, action: { type: string; pay
         isTableView: !state.isTableView
       });
     case ActionType.FILTER_PERSONS:
-      console.log(action.payload);
       return extend(state, {
         inputValue: action.payload
       });
     case ActionType.CHANGE_FAVORITE_STATUS:
-      return extend(state, {
-        persons: updateFavoriteStatus(state.persons, action.payload),
-      });
+      state.persons = updateFavoriteStatus(state.persons, action.payload);
+      return state;
     case ActionType.GET_VALUE_FROM_URL:
       return extend(state, action.payload);
+    case ActionType.CHANGE_VIDEO_ID:
+      return extend(state, {
+        videoPlayingId: action.payload
+      });
     case ActionType.UPDATE_URL:
       const title = ``;
       const url = `sort=${state.sortType}&asceding=${state.isSortAscending}&tableview=${(state.isTableView) ? `table` : `preview`}`;
